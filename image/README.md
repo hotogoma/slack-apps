@@ -20,5 +20,6 @@ $ make publish [AWS_PROFILE=...]
 ## 環境変数
 | Key | Value |
 |---|---|
+| `SLACK_SLASH_COMMAND_TOKEN` | Slash Commands で設定されているトークン |
 | `GOOGLE_CSE_KEY` | Google の API Key |
 | `GOOGLE_CSE_ID` | 作成した Custom Search Engine の ID |
