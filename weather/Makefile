@@ -11,8 +11,7 @@ function.zip: main.py
 publish: function.zip
 	aws --profile ${AWS_PROFILE} lambda update-function-code \
 		--function-name ${FUNCTION} \
-		--zip-file fileb://$< \
-		--publish
+		--zip-file fileb://$<
 
 clean: function.zip
 	rm -f $^
