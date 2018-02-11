@@ -61,7 +61,6 @@ def handler(event, context):
 
     title = '明日の天気は {} です'.format(weather['weather_emoji'])
     data = {
-        # 'text': 'foo',
         'attachments': [{
             'fallback': title,
             'title': title,
