@@ -18,3 +18,4 @@ $ make publish [AWS_PROFILE=...]
 | Key | Value |
 |---|---|
 | `SLACK_INCOMING_WEBHOOK_URL` | `https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/xxxxxxxxxxxxxxxxxxxxxxxx` |
+| `GITHUB_API_TOKEN` | |
