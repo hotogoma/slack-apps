@@ -8,21 +8,60 @@ import urllib.request
 
 def get_new_posts(delta):
     assert type(delta) == datetime.timedelta
-    url = 'https://arxivtimes.herokuapp.com/'
-    req = urllib.request.Request(url)
+    url = 'https://api.github.com/graphql'
+    headers = {
+        'Content-Type': 'application/json',
+        'Authorization': 'bearer {}'.format(os.environ.get('GITHUB_API_TOKEN')),
+    }
+    query = """
+        query {
+          repository(owner:"arXivTimes", name:"arXivTimes") {
+            issues(last: 10) {
+              edges {
+                node {
+                  title
+                  url
+                  body
+                  createdAt
+                  author {
+                    avatarUrl(size: 60)
+                    login
+                  }
+                  labels(first: 10) {
+                    edges {
+                      node {
+                        name
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+        """
+    req = urllib.request.Request(url, json.dumps({ 'query': query }).encode(), headers)
     with urllib.request.urlopen(req) as res:
-        body = res.read().decode()
-    matched = re.search(r'^var POSTS = (.+?);$', body, flags=re.MULTILINE)
-    assert matched
-    data = json.loads(matched[1])
+        data = json.load(res)
     since = datetime.datetime.now(datetime.timezone.utc) - delta
     posts = []
-    for post in data['recent']:
-        post['created_at'] = dateutil.parser.parse(post['created_at'])
-        if post['created_at'] > since:
-            posts.append(post)
+    for post in data['data']['repository']['issues']['edges']:
+        post = post['node']
+        post['createdAt'] = dateutil.parser.parse(post['createdAt'])
+        if post['createdAt'] < since:
+            continue
+        matched = re.match(r'^## 一言でいうと\r\n(.+?)\r\n###', post['body'], flags=re.DOTALL)
+        if not matched:
+            continue
+        post['headline'] = matched[1]
+        matched = re.match(r'^(.+)!\[.*?\]\((.+?)\)\s*$', post['headline'], flags=re.DOTALL)
+        if matched:
+            post['headline'] = matched[1]
+            post['imageUrl'] = matched[2]
         else:
-            break
+            post['imageUrl'] = None
+        post['labels'] = [label['node']['name'] for label in post['labels']['edges']]
+        posts.append(post)
     return posts
 
 
@@ -32,14 +71,11 @@ def to_slack_attachment(post):
         'title_link': post['url'],
         'text': post['headline'],
         'mrkdwn_in': ['text'],
-        'footer': post['user_id'],
-        'footer_icon': post['avatar_url'],
-        'ts': int(post['created_at'].timestamp()),
+        'image_url': post['imageUrl'],
+        'footer': post['author']['login'],
+        'footer_icon': post['author']['avatarUrl'],
+        'ts': int(post['createdAt'].timestamp()),
     }
-    matched = re.search(r'^(.+)!\[.*?\]\((.+?)\)', attachment['text'], flags=re.DOTALL)
-    if matched:
-        attachment['text'] = matched[1]
-        attachment['image_url'] = matched[2]
     if len(post['labels']) > 0:
         labels = ' '.join(['`{}`'.format(label) for label in post['labels']])
         attachment['text'] = labels + '\n' + attachment['text']
@@ -52,6 +88,6 @@ def handler(event, context):
         return
     url = os.environ.get('SLACK_INCOMING_WEBHOOK_URL')
     data = { 'attachments': [to_slack_attachment(post) for post in posts] }
-    data = json.dumps(data).encode('ascii')
+    data = json.dumps(data).encode()
     req = urllib.request.Request(url, data)
     urllib.request.urlopen(req)
