@@ -1,6 +1,8 @@
 # arXivTimes
 arXivTimes の新着情報を通知するアプリ
 
+![](example.png)
+
 ## 初期設定
 - Lambda Function を作成する
   - ハンドラを `main.handler` に設定する
