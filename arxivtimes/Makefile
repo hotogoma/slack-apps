@@ -5,7 +5,7 @@ FUNCTION = slack-arxivtimes
 
 default:
 
-function.zip: main.py
+function.zip: main.py fetch.graphql
 	zip $@ $^
 
 publish: function.zip

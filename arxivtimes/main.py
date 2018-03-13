@@ -13,34 +13,9 @@ def get_new_posts(delta):
         'Content-Type': 'application/json',
         'Authorization': 'bearer {}'.format(os.environ.get('GITHUB_API_TOKEN')),
     }
-    query = """
-        query {
-          repository(owner:"arXivTimes", name:"arXivTimes") {
-            issues(last: 10) {
-              edges {
-                node {
-                  title
-                  url
-                  body
-                  createdAt
-                  author {
-                    avatarUrl(size: 60)
-                    login
-                  }
-                  labels(first: 10) {
-                    edges {
-                      node {
-                        name
-                      }
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-        """
-    req = urllib.request.Request(url, json.dumps({ 'query': query }).encode(), headers)
+    with open('fetch.graphql') as f:
+        data = { 'query': f.read() }
+    req = urllib.request.Request(url, json.dumps(data).encode(), headers)
     with urllib.request.urlopen(req) as res:
         data = json.load(res)
     since = datetime.datetime.now(datetime.timezone.utc) - delta
