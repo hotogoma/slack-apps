@@ -6,7 +6,7 @@ import urllib.request
 
 def check_garbage_day(date):
     assert type(date) == datetime.date
-    weeknum = int((date.day - 1) / 7)
+    weeknum = int((date.day + 6) / 7)
     if date.weekday() in (1, 4):  # 火曜・金曜
         return ':fire: 可燃ごみ'
     if date.weekday() == 2:  # 水曜
