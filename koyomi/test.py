@@ -27,6 +27,15 @@ class TestKoyomi(TestCase):
         self.assertEqual(len(koyomi), 0)
 
 
+    def test_holiday_date(self):
+        message = datetime_to_slack_message(datetime(2018, 8, 11, tzinfo=JST))
+        attachment = message['attachments'][0]
+        self.assertEqual(attachment['fallback'], '08月11日(土祝) 山の日です')
+        self.assertEqual(attachment['title'], '08月11日(土祝) 山の日です')
+        koyomi = attachment['fields']
+        self.assertEqual(len(koyomi), 0)
+
+
     def test_holiday_info(self):
         self.assertIsNone(fetch_holiday_info(datetime(2018, 8, 10, tzinfo=JST)))
         self.assertEqual(fetch_holiday_info(datetime(2018, 8, 11, tzinfo=JST)), '山の日')

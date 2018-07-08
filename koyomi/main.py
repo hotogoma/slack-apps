@@ -35,7 +35,12 @@ def datetime_to_slack_message(dt):
     assert type(dt) == datetime
 
     week = '月火水木金土日'[dt.weekday()]
-    title = dt.strftime('%m月%d日({}{}){} です').format(week, '', '')  # TODO 祝日
+    holiday = fetch_holiday_info(dt)
+    if holiday:
+        week += '祝'
+    else:
+        holiday = ''
+    title = dt.strftime('%m月%d日({}) {}です').format(week, holiday)
     attachment = {
         'fallback': title,
         'title': title,
