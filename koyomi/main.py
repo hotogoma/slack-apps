@@ -16,7 +16,6 @@ def fetch_holiday_info(dt):
     params = {
         'timeMin': date.isoformat(),
         'timeMax': (date + timedelta(seconds=1)).isoformat(),
-        'timeZone': 'JST',
         'key': os.environ.get('GOOGLE_API_KEY'),
     }
     url = 'https://www.googleapis.com/calendar/v3/calendars/{}/events'.format(GOOGLE_CALENDAR_ID)
