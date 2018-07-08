@@ -18,8 +18,9 @@ $ make publish [AWS_PROFILE=...]
 | Key | Value |
 |---|---|
 | `SLACK_INCOMING_WEBHOOK_URL` | `https://hooks.slack.com/services/XXXXXXXXX/XXXXXXXXX/xxxxxxxxxxxxxxxxxxxxxxxx` |
+| `GOOGLE_API_KEY` | `XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX` |
 
 ## テスト
 ``` console
-$ python3 -m unittest test
+$ GOOGLE_API_KEY=... python3 -m unittest test
 ```

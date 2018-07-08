@@ -1,5 +1,5 @@
 from unittest import TestCase
-from main import *
+from main import datetime_to_slack_message, fetch_holiday_info
 from datetime import datetime, timezone, timedelta
 
 
@@ -27,6 +27,7 @@ class TestKoyomi(TestCase):
         self.assertEqual(len(koyomi), 0)
 
 
-    def test_holiday_date(self):
-        message = datetime_to_slack_message(datetime(2018, 8, 11, tzinfo=JST))
-        # TODO
+    def test_holiday_info(self):
+        self.assertIsNone(fetch_holiday_info(datetime(2018, 8, 10, tzinfo=JST)))
+        self.assertEqual(fetch_holiday_info(datetime(2018, 8, 11, tzinfo=JST)), '山の日')
+        self.assertIsNone(fetch_holiday_info(datetime(2018, 8, 12, tzinfo=JST)))
