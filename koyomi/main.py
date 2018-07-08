@@ -5,34 +5,33 @@ import urllib.request
 import koyomi
 
 
-JST = timezone(timedelta(hours=+9), 'JST')
+def datetime_to_slack_message(dt):
+    assert type(dt) == datetime
 
-
-def handler(event, context):
-    now = datetime.now(tz=JST)
-    week = '月火水木金土日'[now.weekday()]
-    title = now.strftime('%m月%d日({}{}){} です').format(week, '', '')  # TODO 祝日
-
-    data = {
-        'attachments': [
-            {
-                'fallback': title,
-                'title': title,
-                'fields': [],
-            }
-        ],
-        'username': 'koyomi',
-        'icon_emoji': ':calendar:',
+    week = '月火水木金土日'[dt.weekday()]
+    title = dt.strftime('%m月%d日({}{}){} です').format(week, '', '')  # TODO 祝日
+    attachment = {
+        'fallback': title,
+        'title': title,
+        'fields': [],
     }
 
-    k = koyomi.today()
+    # 二十四節気
+    k = koyomi.from_date(dt.year, dt.month, dt.day, tz=dt.tzinfo)
     if k is not None:
-        data['attachments']['fields'].append({
+        attachment['fields'].append({
             'title': k.name,
             'value': k.description,
         })
 
-    url = os.environ.get('SLACK_INCOMING_WEBHOOK_URL')
+    return { 'attachments': [attachment] }
+
+
+def handler(event, context):
+    JST = timezone(timedelta(hours=+9), 'JST')
+    now = datetime.now(tz=JST)
+    data = datetime_to_slack_message(now)
     data = json.dumps(data).encode('ascii')
+    url = os.environ.get('SLACK_INCOMING_WEBHOOK_URL')
     req = urllib.request.Request(url, data)
     urllib.request.urlopen(req)
