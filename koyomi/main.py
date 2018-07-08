@@ -55,7 +55,11 @@ def datetime_to_slack_message(dt):
             'value': k.description,
         })
 
-    return { 'attachments': [attachment] }
+    return {
+        'username': 'koyomi',
+        'icon_emoji': ':calendar:',
+        'attachments': [attachment],
+    }
 
 
 def post_message_to_slack(message):
