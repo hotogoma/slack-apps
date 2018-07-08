@@ -6,6 +6,7 @@ import koyomi
 
 
 GOOGLE_CALENDAR_ID = 'japanese__ja@holiday.calendar.google.com'
+GOOGLE_CALENDAR_API_BASE = 'https://www.googleapis.com/calendar/v3'
 
 
 def fetch_holiday_info(dt):
@@ -18,7 +19,7 @@ def fetch_holiday_info(dt):
         'timeMax': (date + timedelta(seconds=1)).isoformat(),
         'key': os.environ.get('GOOGLE_API_KEY'),
     }
-    url = 'https://www.googleapis.com/calendar/v3/calendars/{}/events'.format(GOOGLE_CALENDAR_ID)
+    url = '{}/calendars/{}/events'.format(GOOGLE_CALENDAR_API_BASE, GOOGLE_CALENDAR_ID)
 
     req = urllib.request.Request('{}?{}'.format(url, urllib.parse.urlencode(params)))
     with urllib.request.urlopen(req) as res:
@@ -57,11 +58,15 @@ def datetime_to_slack_message(dt):
     return { 'attachments': [attachment] }
 
 
-def handler(event, context):
-    JST = timezone(timedelta(hours=+9), 'JST')
-    now = datetime.now(tz=JST)
-    data = datetime_to_slack_message(now)
-    data = json.dumps(data).encode('ascii')
+def post_message_to_slack(message):
+    data = json.dumps(message).encode('ascii')
     url = os.environ.get('SLACK_INCOMING_WEBHOOK_URL')
     req = urllib.request.Request(url, data)
     urllib.request.urlopen(req)
+
+
+def handler(event, context):
+    JST = timezone(timedelta(hours=+9), 'JST')
+    now = datetime.now(tz=JST)
+    message = datetime_to_slack_message(now)
+    post_message_to_slack(message)
