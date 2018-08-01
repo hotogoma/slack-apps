@@ -4,8 +4,9 @@
 ## 初期設定
 - Slack に Slash Commands を追加する
   - `/image` が使えるように設定する
-  - 作成する API にリクエストが飛ぶように設定する
+  - 作成する API に `GET` リクエストが飛ぶように設定する
 - API Gateway で API を作成する
+  - `GET` でリクエストを受け付けるリソースを作成する
   - Lambda Proxy integration でイベントをそのまま Lambda Function に流すように設定する
 - Lambda Function を作成する
   - ハンドラを `main.handler` に設定する
