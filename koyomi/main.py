@@ -35,7 +35,7 @@ def fetch_holiday_info(dt):
     return None
 
 
-def datetime_to_slack_message(dt):
+def datetime_to_slack_message(dt: datetime) -> dict:
     assert type(dt) == datetime
 
     week = '月火水木金土日'[dt.weekday()]
@@ -59,14 +59,17 @@ def datetime_to_slack_message(dt):
             'value': k.description,
         })
 
-    return {
+    message = {
         'username': 'koyomi',
         'icon_emoji': ':calendar:',
         'attachments': [attachment],
     }
 
+    # 祝日か二十四節気のときだけ投稿する
+    return message if holiday or k else None:
 
-def post_message_to_slack(message):
+
+def post_message_to_slack(message: dict):
     data = json.dumps(message).encode('ascii')
     url = os.environ.get('SLACK_INCOMING_WEBHOOK_URL')
     req = urllib.request.Request(url, data)
@@ -77,4 +80,5 @@ def handler(event, context):
     JST = timezone(timedelta(hours=+9), 'JST')
     now = datetime.now(tz=JST)
     message = datetime_to_slack_message(now)
-    post_message_to_slack(message)
+    if message:
+        post_message_to_slack(message)
