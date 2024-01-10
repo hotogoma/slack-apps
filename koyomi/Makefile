@@ -6,8 +6,13 @@ FUNCTION = slack-koyomi
 default:
 
 packages:
-	docker run --rm -v ${PWD}:/work -w /work python:3.12 \
-		pip install -r requirements.txt -t ./packages
+	docker run \
+		--rm \
+		--platform linux/x86_64 \
+		-v ${PWD}:/work \
+		-w /work \
+		python:3.12 \
+			pip install -r requirements.txt -t ./packages
 
 function.zip: main.py packages
 	zip -r $@ $^
@@ -17,5 +22,5 @@ publish: function.zip
 		--function-name ${FUNCTION} \
 		--zip-file fileb://$<
 
-clean: function.zip
-	rm -f $^
+clean:
+	rm -rf packages function.zip
