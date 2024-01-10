@@ -6,7 +6,7 @@ FUNCTION = slack-koyomi
 default:
 
 packages:
-	docker run --rm -v ${PWD}:/work -w /work python:3.6 \
+	docker run --rm -v ${PWD}:/work -w /work python:3.12 \
 		pip install -r requirements.txt -t ./packages
 
 function.zip: main.py packages
