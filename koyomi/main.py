@@ -66,7 +66,7 @@ def datetime_to_slack_message(dt: datetime) -> dict:
     }
 
     # 祝日か二十四節気のときだけ投稿する
-    return message if holiday or k else None:
+    return message if holiday or k else None
 
 
 def post_message_to_slack(message: dict):
