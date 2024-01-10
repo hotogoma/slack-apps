@@ -13,7 +13,7 @@ GOOGLE_CALENDAR_ID = 'japanese__ja@holiday.calendar.google.com'
 GOOGLE_CALENDAR_API_BASE = 'https://www.googleapis.com/calendar/v3'
 
 
-def fetch_holiday_info(dt):
+def fetch_holiday_info(dt: datetime) -> str | None:
     assert type(dt) == datetime
 
     date = datetime(dt.year, dt.month, dt.day, 9, tzinfo=dt.tzinfo)
@@ -35,7 +35,7 @@ def fetch_holiday_info(dt):
     return None
 
 
-def datetime_to_slack_message(dt: datetime) -> dict:
+def datetime_to_slack_message(dt: datetime) -> dict | None:
     assert type(dt) == datetime
 
     week = '月火水木金土日'[dt.weekday()]
